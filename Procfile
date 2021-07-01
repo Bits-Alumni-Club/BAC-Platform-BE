@@ -1,1 +1,1 @@
-web: gunicorn djangoherokuapp.wsgi --log-file -
+web: gunicorn BAC_Platform.wsgi --log-file - --log-level debug
