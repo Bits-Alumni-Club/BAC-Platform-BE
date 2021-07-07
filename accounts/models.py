@@ -90,3 +90,7 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=CustomUser)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+class Event(models.Model):
+    pass
