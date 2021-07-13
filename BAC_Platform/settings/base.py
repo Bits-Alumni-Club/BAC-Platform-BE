@@ -32,9 +32,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'accounts',
+
+    # Third party app
     'drf_yasg',
 ]
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
