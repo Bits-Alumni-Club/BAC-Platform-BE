@@ -1,4 +1,5 @@
 import uuid
+import jwt
 from django.db import models
 from django_countries.fields import CountryField
 # from django.contrib.postgres.fields import ArrayField
@@ -9,6 +10,8 @@ from django.utils.text import slugify
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from .managers import CustomUserManager
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 # Create your models here.
 
@@ -20,16 +23,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         (EKO_BITS, 'Eko Bits'),
         (EDO_BITS, 'Edo Bits'),
     ]
-    id = models.UUIDField(primary_key=True, unique=True, default=uuid.uuid4, editable=False)
-    first_name = models.CharField(_('first name'), max_length=50)
-    last_name = models.CharField(_('last name'), max_length=50)
+    id = models.BigAutoField(primary_key=True, unique=True, editable=False)
+    user_id = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    first_name = models.CharField(_('first name'), max_length=30)
+    last_name = models.CharField(_('last name'), max_length=30)
     slug = models.SlugField(_('slug'), max_length=255, unique=True)
     email = models.EmailField(_('email address'), unique=True)
-    BAC_id = models.CharField(max_length=255)
+    BAC_id = models.CharField(_('BAC id'), max_length=255)
     is_active = models.BooleanField(_('is active'), default=False)
+    is_staff = models.BooleanField(_('is staff'), default=False)
     phone_number = models.CharField(_('phone number'), max_length=14)
     bits_school = models.CharField(_('bits school'), max_length=20, choices=BITS_SCHOOL_CHOICES)
-    year_of_graduation = models.DateField(_('year of graduation'), blank=False)
+    year_of_graduation = models.CharField(_('year of graduation'), max_length=20, blank=False)
     country = CountryField(_('country'))
     certificate = models.FileField(_('certificate'))
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
@@ -53,22 +58,40 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         ordering = ['-created_at']
 
-    def auto_id(self):
-        return 'BAC'+self.year_of_graduation+self.id
+    def auto_generated_id(self):
+        if self.id:
+            if len(str(self.id)) == 1:
+                return 'BAC'+str(self.year_of_graduation)+'000'+str(self.id)
+            if len(str(self.id)) == 2:
+                return 'BAC'+str(self.year_of_graduation)+'00'+str(self.id)
+            if len(str(self.id)) == 3:
+                return 'BAC'+str(self.year_of_graduation)+'0'+str(self.id)
+            if len(str(self.id)) == 4:
+                return 'BAC'+str(self.year_of_graduation)+str(self.id)
+            return 'BAC' + str(self.year_of_graduation) + str(self.id)
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.first_name + '-' + self.last_name)
-        if not self.BAC_ID:
-            self.BAC_ID = self.auto_id()
-        return super().save(*args, **kwargs)
+        if self.id is None:
+            super().save(*args, **kwargs)
+            if not self.BAC_id:
+                self.BAC_id = self.auto_generated_id()
+        super().save(*args, **kwargs)
+
+    def token(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }
 
 
 class Profile(models.Model):
     user = models.OneToOneField(to=CustomUser, on_delete=models.CASCADE)
     profile_image = models.ImageField(_('profile photo'))
     bio = models.CharField(_('Bio'), max_length=255, null=True, blank=True)
-    birthdate = models.DateField(_('date of birth'), null=True, blank=True)
+    dob = models.DateField(_('date of birth'), null=True, blank=True)
     website_link = models.URLField(_('website link'))
     portfolio_link = models.URLField(_('portfolio link'))
     facebook_profile = models.URLField(_('facebook profile'))
@@ -77,20 +100,11 @@ class Profile(models.Model):
     skill_sets = models.CharField(_('skill sets'), max_length=255, null=True, blank=True)
 
 
-@receiver(post_save, sender=CustomUser)
-def create_user_profile(sender, instance, created, **kwargs):
-    # if created:
-    #     Artist.objects.create(user=instance)
-    try:
-        instance.artist.save()
-    except ObjectDoesNotExist:
-        Profile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=CustomUser)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
-
-
-class Event(models.Model):
-    pass
+# @receiver(post_save, sender=CustomUser)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     # if created:
+#     #     Artist.objects.create(user=instance)
+#     try:
+#         instance.profile.save()
+#     except ObjectDoesNotExist:
+#         Profile.objects.create(user=instance)
