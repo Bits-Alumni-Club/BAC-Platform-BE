@@ -6,4 +6,4 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = True
 ALLOWED_HOSTS = ['0.0.0.0', 'bitsalumniclub-api.herokuapp.com', '127.0.0.1']
 
-# adding few changes here djdjjd
+#update here
