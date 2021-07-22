@@ -65,8 +65,10 @@ class LoginSerializer(serializers.Serializer):
         user = auth.authenticate(email=email, password=password)
         if user is None:
             raise AuthenticationFailed('Invalid login credentials.')
-        if user.is_active is False:
+        if user.is_verified is False:
             raise AuthenticationFailed('You account verification still in progress.')
+        if user.is_active is False:
+            raise AuthenticationFailed('You account have been suspended, kindly contact Administration.')
         return {
             'email': user.email,
             'tokens': user.token
