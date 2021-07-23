@@ -20,6 +20,7 @@ class BitsSchoolSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
+    bits_school = BitsSchoolSerializer(many=True, read_only=True)
 
     class Meta:
         model = CustomUser
@@ -31,7 +32,6 @@ class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
 
 class SignupSerializer(CountryFieldMixin, serializers.ModelSerializer):
     password = serializers.CharField(max_length=20, allow_null=True, required=False)
-    bits_school = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = CustomUser
