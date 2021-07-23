@@ -20,7 +20,7 @@ class BitsSchoolSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
-    bits_school = BitsSchoolSerializer(many=True, read_only=True)
+    bits_school = BitsSchoolSerializer(many=True)
 
     class Meta:
         model = CustomUser

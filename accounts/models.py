@@ -52,6 +52,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         ordering = ['-created_at']
+        verbose_name_plural = 'Users'
+        verbose_name = 'User'
 
     def auto_generated_id(self):
         if self.id:
@@ -93,6 +95,9 @@ class Profile(models.Model):
     twitter_profile = models.URLField(_('twitter profile'))
     linkedin_profile = models.URLField(_('linkedIn profile'))
     skill_sets = models.CharField(_('skill sets'), max_length=255, null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = 'Profile'
 
 
 @receiver(post_save, sender=CustomUser)
