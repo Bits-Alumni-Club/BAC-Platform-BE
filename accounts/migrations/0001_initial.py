@@ -29,7 +29,6 @@ class Migration(migrations.Migration):
                 ('BAC_id', models.CharField(max_length=255, verbose_name='BAC id')),
                 ('is_verified', models.BooleanField(default=False, verbose_name='is verified')),
                 ('is_active', models.BooleanField(default=False, verbose_name='is active')),
-                ('is_active', models.BooleanField(default=True, verbose_name='is active')),
                 ('is_staff', models.BooleanField(default=False, verbose_name='is staff')),
                 ('phone_number', models.CharField(max_length=14, verbose_name='phone number')),
                 ('year_of_graduation', models.CharField(max_length=20, verbose_name='year of graduation')),
