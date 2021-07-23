@@ -2,7 +2,11 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
+<<<<<<< HEAD
 from .models import CustomUser, Profile
+=======
+from .models import CustomUser, Profile, BitsSchool
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
 from django_countries.serializers import CountryFieldMixin
 from drf_yasg.utils import swagger_serializer_method
 from django.urls import reverse
@@ -13,9 +17,21 @@ from django.db import IntegrityError
 
 
 # Create your serializers here.
+<<<<<<< HEAD
 
 
 class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
+=======
+class BitsSchoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BitsSchool
+        fields = ['name']
+
+
+class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
+    bits_school = BitsSchoolSerializer(many=True, read_only=True)
+
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
     class Meta:
         model = CustomUser
         fields = ["id", "user_id", "user_type", "first_name", "last_name", "email", "BAC_id", "slug", "is_active",
@@ -25,13 +41,19 @@ class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
 
 
 class SignupSerializer(CountryFieldMixin, serializers.ModelSerializer):
+<<<<<<< HEAD
     password = serializers.CharField(max_length=20, min_length=3)
+=======
+    password = serializers.CharField(max_length=20, allow_null=True, required=False)
+    bits_school = serializers.StringRelatedField(many=True)
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
 
     class Meta:
         model = CustomUser
         fields = ["first_name", "last_name", "email", "phone_number", "bits_school", "year_of_graduation",
                   "country", "password"]
 
+<<<<<<< HEAD
     # def create(self, validated_data):
     #     first_name = validated_data.get('first_name')
     #     last_name = validated_data.get('last_name')
@@ -42,6 +64,16 @@ class SignupSerializer(CountryFieldMixin, serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data['password']
         instances = self.Meta.model(**validated_data)
+=======
+    def create(self, validated_data):
+        password = validated_data.get('password', '')
+        instances = self.Meta.model(**validated_data)
+        if password == '':
+            password = CustomUser.objects.make_random_password(length=10,
+                                                               allowed_chars="abcdefghjkmnpqrstuvwxyz01234567889")
+
+            instances.set_password(password)
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
         if password is not None:
             instances.set_password(password)
         instances.save()
@@ -65,10 +97,15 @@ class LoginSerializer(serializers.Serializer):
         user = auth.authenticate(email=email, password=password)
         if user is None:
             raise AuthenticationFailed('Invalid login credentials.')
+<<<<<<< HEAD
         if user.is_verified is False:
             raise AuthenticationFailed('You account verification still in progress.')
         if user.is_active is False:
             raise AuthenticationFailed('You account have been suspended, kindly contact Administration.')
+=======
+        if user.is_active is False:
+            raise AuthenticationFailed('You account verification still in progress.')
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
         return {
             'email': user.email,
             'tokens': user.token

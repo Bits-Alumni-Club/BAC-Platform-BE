@@ -28,7 +28,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_('is active'), default=True)
     is_staff = models.BooleanField(_('is staff'), default=False)
     phone_number = models.CharField(_('phone number'), max_length=14)
+<<<<<<< HEAD
     bits_school = models.OneToOneField('BitsSchool', on_delete=models.CASCADE, null=True)
+=======
+    bits_school = models.OneToOneField('BitsSchool', related_name='bits_schools', on_delete=models.CASCADE, null=True)
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
     year_of_graduation = models.CharField(_('year of graduation'), max_length=20, blank=False)
     country = CountryField(_('country'))
     certificate = models.FileField(_('certificate'))
@@ -52,6 +56,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         ordering = ['-created_at']
+<<<<<<< HEAD
+=======
+        verbose_name_plural = 'Users'
+        verbose_name = 'User'
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
 
     def auto_generated_id(self):
         if self.id:
@@ -67,11 +76,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         if not self.slug:
+<<<<<<< HEAD
             self.slug = slugify("admin" + '-' + "user")
         if self.id is None:
             super().save(*args, **kwargs)
             if not self.BAC_id:
                 self.BAC_id = "BAC2020001"
+=======
+            self.slug = slugify(self.first_name + '-' + self.last_name)
+        if self.id is None:
+            super().save(*args, **kwargs)
+            if not self.BAC_id:
+                self.BAC_id = self.auto_generated_id()
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
         super().save(*args, **kwargs)
 
     def token(self):
@@ -94,6 +111,15 @@ class Profile(models.Model):
     linkedin_profile = models.URLField(_('linkedIn profile'))
     skill_sets = models.CharField(_('skill sets'), max_length=255, null=True, blank=True)
 
+<<<<<<< HEAD
+=======
+    def __str__(self):
+        return self.user
+
+    class Meta:
+        verbose_name_plural = "Profile"
+
+>>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
 
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
