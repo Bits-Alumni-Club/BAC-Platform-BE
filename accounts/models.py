@@ -67,11 +67,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.first_name + '-' + self.last_name)
+            self.slug = slugify("admin" + '-' + "user")
         if self.id is None:
             super().save(*args, **kwargs)
             if not self.BAC_id:
-                self.BAC_id = self.auto_generated_id()
+                self.BAC_id = "BAC2020001"
         super().save(*args, **kwargs)
 
     def token(self):
