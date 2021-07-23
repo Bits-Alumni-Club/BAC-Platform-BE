@@ -28,7 +28,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_('is active'), default=True)
     is_staff = models.BooleanField(_('is staff'), default=False)
     phone_number = models.CharField(_('phone number'), max_length=14)
-    bits_school = models.OneToOneField('BitsSchool', on_delete=models.CASCADE, null=True)
+    bits_school = models.OneToOneField('BitsSchool', related_name='bits_schools', on_delete=models.CASCADE, null=True)
     year_of_graduation = models.CharField(_('year of graduation'), max_length=20, blank=False)
     country = CountryField(_('country'))
     certificate = models.FileField(_('certificate'))
@@ -52,6 +52,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         ordering = ['-created_at']
+        verbose_name_plural = 'Users'
+        verbose_name = 'User'
 
     def auto_generated_id(self):
         if self.id:
@@ -93,6 +95,12 @@ class Profile(models.Model):
     twitter_profile = models.URLField(_('twitter profile'))
     linkedin_profile = models.URLField(_('linkedIn profile'))
     skill_sets = models.CharField(_('skill sets'), max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return self.user
+
+    class Meta:
+        verbose_name_plural = "Profile"
 
 
 @receiver(post_save, sender=CustomUser)
