@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserSerializer, SignupSerializer, LoginSerializer, \
     RequestPasswordResetEmailSerializer, SetNewPasswordSerializer
-from .models import CustomUser, Profile
+from .models import CustomUser, Profile, BitsSchool
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
