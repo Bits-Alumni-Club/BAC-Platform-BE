@@ -4,11 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserSerializer, SignupSerializer, LoginSerializer, \
     RequestPasswordResetEmailSerializer, SetNewPasswordSerializer
-<<<<<<< HEAD
-from .models import CustomUser, Profile
-=======
 from .models import CustomUser, Profile, BitsSchool
->>>>>>> 0241d8008a173ba974ccc9aca0714d3229e31873
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
