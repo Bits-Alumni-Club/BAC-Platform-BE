@@ -29,10 +29,6 @@ class BitsSchool(models.Model):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-<<<<<<< HEAD
-
-=======
->>>>>>> 19c398321d7f117e952547bae164345e224ce6ad
     id = models.BigAutoField(primary_key=True, unique=True, editable=False)
     user_id = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(_('first name'), max_length=30)
@@ -40,19 +36,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     slug = models.SlugField(_('slug'), max_length=255, unique=True)
     email = models.EmailField(_('email address'), unique=True)
     BAC_id = models.CharField(_('BAC id'), max_length=255)
-<<<<<<< HEAD
     is_active = models.BooleanField(_('is active'), default=False)
     is_verified = models.BooleanField(_('is verified'), default=False)
     is_staff = models.BooleanField(_('is staff'), default=False)
     phone_number = models.CharField(_('phone number'), max_length=14)
     bits_school = models.ForeignKey(BitsSchool, on_delete=models.SET_NULL, null=True)
-=======
     is_verified = models.BooleanField(_('is verified'), default=False)
     is_active = models.BooleanField(_('is active'), default=True)
     is_staff = models.BooleanField(_('is staff'), default=False)
     phone_number = models.CharField(_('phone number'), max_length=14)
     bits_school = models.OneToOneField('BitsSchool', on_delete=models.CASCADE, null=True)
->>>>>>> 19c398321d7f117e952547bae164345e224ce6ad
     year_of_graduation = models.CharField(_('year of graduation'), max_length=20, blank=False)
     country = CountryField(_('country'))
     certificate = models.FileField(_('certificate'))
@@ -139,7 +132,7 @@ class BitsSchool(models.Model):
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     update_at = models.DateTimeField(_('updated at'), auto_now=True)
 
-<<<<<<< HEAD
+
 @receiver(post_save, sender=CustomUser)
 def create_user_profile(sender, instance, created, **kwargs):
     # if created:
@@ -148,10 +141,4 @@ def create_user_profile(sender, instance, created, **kwargs):
         instance.profile.save()
     except ObjectDoesNotExist:
         Profile.objects.create(user=instance)
-=======
-    def __str__(self):
-        return self.name
 
-    class Meta:
-        verbose_name_plural = 'Bits Schools'
->>>>>>> 19c398321d7f117e952547bae164345e224ce6ad
