@@ -20,7 +20,11 @@ class BitsSchoolSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
+<<<<<<< HEAD
     bits_school = serializers.ReadOnlyField(source='bits_school.name')
+=======
+    bits_school = BitsSchoolSerializer(many=True, read_only=True)
+>>>>>>> 19c398321d7f117e952547bae164345e224ce6ad
 
     class Meta:
         model = CustomUser
