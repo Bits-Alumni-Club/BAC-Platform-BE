@@ -21,7 +21,6 @@ class BitsSchoolSerializer(serializers.ModelSerializer):
 
 class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
     bits_school = serializers.ReadOnlyField(source='bits_school.name')
-    # bits_school = BitsSchoolSerializer(many=True, read_only=True)
 
     class Meta:
         model = CustomUser
@@ -115,8 +114,7 @@ class SetNewPasswordSerializer(serializers.ModelSerializer):
             user = CustomUser.objects.get(id=user_id)
             if not PasswordResetTokenGenerator().check_token(user, token):
                 raise serializers.ValidationError("The reset link is invalid")
-            # import pdb
-            # pdb.set_trace()
+
             user.set_password(new_password)
             user.save()
             return user

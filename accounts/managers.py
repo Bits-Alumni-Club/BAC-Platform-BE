@@ -4,14 +4,6 @@ import datetime
 
 
 class CustomUserManager(BaseUserManager):
-
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('Email must be set')
-        user = self.model(email=self.normalize_email(email), **extra_fields)
-        # if password is None:
-        #     password = CustomUser.objects.make_random_password(length=10, allowed_chars="abcdefghjkmnpqrstuvwxyz01234567889")
-
     def create_user(self, email, password, **extra_fields):
         if not email:
             raise ValueError('Email must be set')

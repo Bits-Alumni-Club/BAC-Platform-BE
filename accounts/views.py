@@ -122,6 +122,7 @@ class PasswordResetTokenCheck(APIView):
 
 
 class SetNewPasswordAPI(APIView):
+    renderer_classes = (UserRegistrationRenderers,)
     new_password = openapi.Schema(type=openapi.TYPE_STRING)
     confirm_password = openapi.Schema(type=openapi.TYPE_STRING)
     properties = {"new_password": new_password, "confirm_password": confirm_password}
