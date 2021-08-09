@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserSerializer, SignupSerializer, LoginSerializer, \
     RequestPasswordResetEmailSerializer, SetNewPasswordSerializer
-from .models import CustomUser, Profile
+from .models import CustomUser, Profile, BitsSchool
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -14,7 +14,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .utils import Util
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+from .renderers import UsersRenderers, UserRegistrationRenderers, UserDetailRenderers
 
 # # Create your views here.
 
@@ -22,15 +22,18 @@ from drf_yasg import openapi
 class UserListAPI(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
+    renderer_classes = (UsersRenderers,)
 
 
 class UserDetailsAPI(generics.RetrieveAPIView):
     queryset = CustomUser.objects.all()
     lookup_field = 'id'
     serializer_class = UserSerializer
+    renderer_classes = (UserDetailRenderers,)
 
 
 class SignupAPI(APIView):
+    renderer_classes = (UserRegistrationRenderers,)
     first_name = openapi.Schema(type=openapi.TYPE_STRING)
     last_name = openapi.Schema(type=openapi.TYPE_STRING)
     email = openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_EMAIL)
@@ -55,6 +58,8 @@ class SignupAPI(APIView):
 
 
 class LoginAPI(APIView):
+    renderer_classes = (UserRegistrationRenderers,)
+
     @swagger_auto_schema(request_body=openapi.Schema(type=openapi.TYPE_OBJECT,
                                                      required=['email', 'password'],
                                                      properties={'email': openapi.Schema(type=openapi.TYPE_STRING,
@@ -63,17 +68,20 @@ class LoginAPI(APIView):
                                                                                             format=openapi.FORMAT_PASSWORD)
                                                                  }))
     def post(self, request):
+        # renderer_classes = (UserRegistrationRenderers,)
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RequestPasswordResetAPI(APIView):
+    renderer_classes = (UserRegistrationRenderers,)
+
     @swagger_auto_schema(request_body=openapi.Schema(type=openapi.TYPE_OBJECT,
                                                      required=['email'],
                                                      properties={'email': openapi.Schema(type=openapi.TYPE_STRING,
                                                                                          format=openapi.FORMAT_EMAIL)
-                                                                 }))
+                                                                }))
     def post(self, request):
         serializer = RequestPasswordResetEmailSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -98,6 +106,8 @@ class RequestPasswordResetAPI(APIView):
 
 
 class PasswordResetTokenCheck(APIView):
+    renderer_classes = (UserRegistrationRenderers,)
+
     def get(self, request, uidb64, token):
         try:
             user_id = smart_str(urlsafe_base64_decode(uidb64))
@@ -109,18 +119,6 @@ class PasswordResetTokenCheck(APIView):
                             status=status.HTTP_200_OK)
         except DjangoUnicodeDecodeError as identifier:
             return Response({"error": "Token is temper with"}, status=status.HTTP_401_UNAUTHORIZED)
-        # user_id = smart_str(urlsafe_base64_decode(uidb64))
-        # user = CustomUser.objects.get(id=user_id)
-        # try:
-        #     if not PasswordResetTokenGenerator().check_token(user, token):
-        #         return Response({"error": "Token is not valid, please request new one"},
-        #                         status=status.HTTP_403_FORBIDDEN)
-        #     return Response({"success": True, "message": "credentials is valid", "uidb64": uidb64, "token": token},
-        #                     status=status.HTTP_200_OK)
-        # except DjangoUnicodeDecodeError as identifier:
-        #     if not PasswordResetTokenGenerator().check_token(user):
-        #         return Response({"error": "Token is not valid, please request new one"},
-        #                         status=status.HTTP_403_FORBIDDEN)
 
 
 class SetNewPasswordAPI(APIView):

@@ -2,7 +2,7 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from django.contrib import auth
 from rest_framework.exceptions import AuthenticationFailed
-from .models import CustomUser, Profile
+from .models import CustomUser, Profile, BitsSchool
 from django_countries.serializers import CountryFieldMixin
 from drf_yasg.utils import swagger_serializer_method
 from django.urls import reverse
@@ -13,9 +13,15 @@ from django.db import IntegrityError
 
 
 # Create your serializers here.
+class BitsSchoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BitsSchool
+        fields = ['name']
 
 
 class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
+    bits_school = serializers.ReadOnlyField(source='bits_school.name')
+
     class Meta:
         model = CustomUser
         fields = ["id", "user_id", "user_type", "first_name", "last_name", "email", "BAC_id", "slug", "is_active",
@@ -25,23 +31,25 @@ class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
 
 
 class SignupSerializer(CountryFieldMixin, serializers.ModelSerializer):
-    password = serializers.CharField(max_length=20, min_length=3)
+    password = serializers.CharField(max_length=20, allow_null=True, required=False)
 
     class Meta:
         model = CustomUser
         fields = ["first_name", "last_name", "email", "phone_number", "bits_school", "year_of_graduation",
                   "country", "password"]
 
-    # def create(self, validated_data):
-    #     first_name = validated_data.get('first_name')
-    #     last_name = validated_data.get('last_name')
-    #     try:
-    #         return CustomUser.objects.create_user(**validated_data)
-    #     except IntegrityError:
-    #         raise serializers.ValidationError({"slug": "exact first and last name already exists"})
     def create(self, validated_data):
         password = validated_data['password']
         instances = self.Meta.model(**validated_data)
+
+    def create(self, validated_data):
+        password = validated_data.get('password', '')
+        instances = self.Meta.model(**validated_data)
+        if password == '':
+            password = CustomUser.objects.make_random_password(length=10,
+                                                               allowed_chars="abcdefghjkmnpqrstuvwxyz01234567889")
+
+            instances.set_password(password)
         if password is not None:
             instances.set_password(password)
         instances.save()
@@ -63,10 +71,13 @@ class LoginSerializer(serializers.Serializer):
 
         # if email and password:
         user = auth.authenticate(email=email, password=password)
+
         if user is None:
             raise AuthenticationFailed('Invalid login credentials.')
-        if user.is_active is False:
+        if user.is_verified is False:
             raise AuthenticationFailed('You account verification still in progress.')
+        if user.is_active is False:
+            raise AuthenticationFailed('You account have been suspended, kindly contact Administration.')
         return {
             'email': user.email,
             'tokens': user.token
@@ -111,11 +122,3 @@ class SetNewPasswordSerializer(serializers.ModelSerializer):
         except Exception as e:
             raise serializers.ValidationError("The reset link is temper with")
         return super().validate(data)
-        #     if not PasswordResetTokenGenerator().check_token(user, token):
-        #         raise AuthenticationFailed('The reset link is invalid', 401)
-        #     user.set_password(password=new_password)
-        #     user.save()
-        #     return user
-        # except Exception as e:
-        #     raise AuthenticationFailed('The reset link is invalid', 401)
-        # return data
