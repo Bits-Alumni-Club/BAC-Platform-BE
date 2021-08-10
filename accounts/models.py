@@ -40,8 +40,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_verified = models.BooleanField(_('is verified'), default=False)
     is_staff = models.BooleanField(_('is staff'), default=False)
     phone_number = models.CharField(_('phone number'), max_length=14)
-    bits_school = models.ForeignKey(BitsSchool, on_delete=models.SET_NULL, null=True)
     year_of_graduation = models.CharField(_('year of graduation'), max_length=20, blank=False)
+    bits_school = models.ForeignKey(BitsSchool, on_delete=models.SET_NULL, null=True)
     country = CountryField(_('country'))
     certificate = models.FileField(_('certificate'))
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
@@ -107,6 +107,7 @@ class Profile(models.Model):
     twitter_profile = models.URLField(_('twitter profile'))
     linkedin_profile = models.URLField(_('linkedIn profile'))
     skill_sets = models.CharField(_('skill sets'), max_length=255, null=True, blank=True)
+    extra_field = models.CharField(_('test'), max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Profile'
