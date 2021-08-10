@@ -19,7 +19,7 @@ class UserRegistrationRenderers(renderers.JSONRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         response = ''
-        if 'detail' in str(data):
+        if 'detail' or 'error' in str(data):
             response = json.dumps({"errors": data})
         else:
             response = json.dumps({"success": data})

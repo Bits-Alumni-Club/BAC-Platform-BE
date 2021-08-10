@@ -54,7 +54,7 @@ class SignupAPI(APIView):
         serializer.save()
         return Response({"success": "your account was successfully created. "
                                     "Account verification might take up to a week"},
-                        status=status.HTTP_200_OK)
+                        status=status.HTTP_201_CREATED)
 
 
 class LoginAPI(APIView):
@@ -68,15 +68,12 @@ class LoginAPI(APIView):
                                                                                             format=openapi.FORMAT_PASSWORD)
                                                                  }))
     def post(self, request):
-        # renderer_classes = (UserRegistrationRenderers,)
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RequestPasswordResetAPI(APIView):
-    renderer_classes = (UserRegistrationRenderers,)
-
     @swagger_auto_schema(request_body=openapi.Schema(type=openapi.TYPE_OBJECT,
                                                      required=['email'],
                                                      properties={'email': openapi.Schema(type=openapi.TYPE_STRING,
@@ -102,23 +99,22 @@ class RequestPasswordResetAPI(APIView):
             Util.send_email(data)
             return Response({"success": "Check your email for a reset password link working"}, status=status.HTTP_200_OK)
         else:
-            return Response({"success": "Check your email for a reset password link"}, status=status.HTTP_200_OK)
+            return Response({"success": "Check your email for a reset password link working"}, status=status.HTTP_200_OK)
 
 
 class PasswordResetTokenCheck(APIView):
-    renderer_classes = (UserRegistrationRenderers,)
 
     def get(self, request, uidb64, token):
         try:
             user_id = smart_str(urlsafe_base64_decode(uidb64))
             user = CustomUser.objects.get(id=user_id)
             if not PasswordResetTokenGenerator().check_token(user, token):
-                return Response({"error": "Token is not valid, request new one"},
+                return Response({"errors": "Token is not valid, request new one"},
                                 status=status.HTTP_401_UNAUTHORIZED)
             return Response({"success": True, "message": "Credentials is valid", "uidb64": uidb64, "token": token},
                             status=status.HTTP_200_OK)
         except DjangoUnicodeDecodeError as identifier:
-            return Response({"error": "Token is temper with"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"errors": "Token is temper with"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class SetNewPasswordAPI(APIView):
@@ -133,4 +129,4 @@ class SetNewPasswordAPI(APIView):
     def patch(self, request):
         serializer = SetNewPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response({"success": True, "message": "Password reset successful"}, status=status.HTTP_200_OK)
+        return Response({"success": True, "message": "Password reset successful"}, status=status.HTTP_201_CREATED)

@@ -19,14 +19,22 @@ class BitsSchoolSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['profile_image', 'bio', "dob", "website_link", "portfolio_link", "facebook_profile",
+                  "twitter_profile", "linkedin_profile", "skill_sets"]
+
+
 class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
     bits_school = serializers.ReadOnlyField(source='bits_school.name')
+    profile = UserProfileSerializer()
 
     class Meta:
         model = CustomUser
         fields = ["id", "user_id", "user_type", "first_name", "last_name", "email", "BAC_id", "slug", "is_active",
-                  "phone_number", "bits_school", "year_of_graduation", "country", "certificate", "created_at",
-                  "update_at"]
+                  "is_verified", "phone_number", "bits_school", "year_of_graduation", "country", "certificate", "created_at",
+                  "update_at", "profile"]
         lookup_field = ['id']
 
 
@@ -39,16 +47,14 @@ class SignupSerializer(CountryFieldMixin, serializers.ModelSerializer):
                   "country", "password"]
 
     def create(self, validated_data):
-        password = validated_data['password']
-        instances = self.Meta.model(**validated_data)
-
-    def create(self, validated_data):
         password = validated_data.get('password', '')
         instances = self.Meta.model(**validated_data)
+        # write check for IntegrityError at /signup/
+        # duplicate key value violates unique constraint "accounts_customuser_slug_key"
+        # DETAIL:  Key (slug)=(jonas-john) already exists.
         if password == '':
             password = CustomUser.objects.make_random_password(length=10,
                                                                allowed_chars="abcdefghjkmnpqrstuvwxyz01234567889")
-
             instances.set_password(password)
         if password is not None:
             instances.set_password(password)

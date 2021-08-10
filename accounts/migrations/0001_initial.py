@@ -28,7 +28,6 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(max_length=255, unique=True, verbose_name='slug')),
                 ('email', models.EmailField(max_length=254, unique=True, verbose_name='email address')),
                 ('BAC_id', models.CharField(max_length=255, verbose_name='BAC id')),
-                ('is_verified', models.BooleanField(default=False, verbose_name='is verified')),
                 ('is_active', models.BooleanField(default=False, verbose_name='is active')),
                 ('is_staff', models.BooleanField(default=False, verbose_name='is staff')),
                 ('phone_number', models.CharField(max_length=14, verbose_name='phone number')),
