@@ -19,20 +19,27 @@ class BitsSchoolSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['profile_image', 'bio', "dob", "website_link", "portfolio_link", "facebook_profile",
+                  "twitter_profile", "linkedin_profile", "skill_sets"]
+
+
 class UserSerializer(CountryFieldMixin, serializers.ModelSerializer):
-    bits_school = BitsSchoolSerializer(many=True, read_only=True)
+    bits_school = serializers.ReadOnlyField(source='bits_school.name')
+    profile = UserProfileSerializer()
 
     class Meta:
         model = CustomUser
         fields = ["id", "user_id", "user_type", "first_name", "last_name", "email", "BAC_id", "slug", "is_active",
-                  "phone_number", "bits_school", "year_of_graduation", "country", "certificate", "created_at",
-                  "update_at"]
+                  "is_verified", "phone_number", "bits_school", "year_of_graduation", "country", "certificate", "created_at",
+                  "update_at", "profile"]
         lookup_field = ['id']
 
 
 class SignupSerializer(CountryFieldMixin, serializers.ModelSerializer):
     password = serializers.CharField(max_length=20, allow_null=True, required=False)
-    bits_school = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = CustomUser
@@ -42,10 +49,12 @@ class SignupSerializer(CountryFieldMixin, serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data.get('password', '')
         instances = self.Meta.model(**validated_data)
+        # write check for IntegrityError at /signup/
+        # duplicate key value violates unique constraint "accounts_customuser_slug_key"
+        # DETAIL:  Key (slug)=(jonas-john) already exists.
         if password == '':
             password = CustomUser.objects.make_random_password(length=10,
                                                                allowed_chars="abcdefghjkmnpqrstuvwxyz01234567889")
-
             instances.set_password(password)
         if password is not None:
             instances.set_password(password)
@@ -68,10 +77,13 @@ class LoginSerializer(serializers.Serializer):
 
         # if email and password:
         user = auth.authenticate(email=email, password=password)
+
         if user is None:
             raise AuthenticationFailed('Invalid login credentials.')
-        if user.is_active is False:
+        if user.is_verified is False:
             raise AuthenticationFailed('You account verification still in progress.')
+        if user.is_active is False:
+            raise AuthenticationFailed('You account have been suspended, kindly contact Administration.')
         return {
             'email': user.email,
             'tokens': user.token
@@ -108,19 +120,10 @@ class SetNewPasswordSerializer(serializers.ModelSerializer):
             user = CustomUser.objects.get(id=user_id)
             if not PasswordResetTokenGenerator().check_token(user, token):
                 raise serializers.ValidationError("The reset link is invalid")
-            # import pdb
-            # pdb.set_trace()
+
             user.set_password(new_password)
             user.save()
             return user
         except Exception as e:
             raise serializers.ValidationError("The reset link is temper with")
         return super().validate(data)
-        #     if not PasswordResetTokenGenerator().check_token(user, token):
-        #         raise AuthenticationFailed('The reset link is invalid', 401)
-        #     user.set_password(password=new_password)
-        #     user.save()
-        #     return user
-        # except Exception as e:
-        #     raise AuthenticationFailed('The reset link is invalid', 401)
-        # return data
