@@ -15,18 +15,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
 
-class BitsSchool(models.Model):
-    name = models.CharField(_('bits school name'), max_length=200)
-    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = 'Bits Schools'
-        verbose_name = 'Bits School'
-
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     id = models.BigAutoField(primary_key=True, unique=True, editable=False)
@@ -41,7 +29,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(_('is staff'), default=False)
     phone_number = models.CharField(_('phone number'), max_length=14)
     year_of_graduation = models.CharField(_('year of graduation'), max_length=20, blank=False)
-    bits_school = models.ForeignKey(BitsSchool, on_delete=models.SET_NULL, null=True)
+    bits_school = models.ForeignKey(to="BitsSchool", on_delete=models.SET_NULL, null=True)
     country = CountryField(_('country'))
     certificate = models.FileField(_('certificate'))
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
@@ -94,6 +82,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         }
+
+
+class BitsSchool(models.Model):
+    name = models.CharField(_('bits school name'), max_length=200)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = 'Bits Schools'
+        verbose_name = 'Bits School'
 
 
 class Profile(models.Model):
