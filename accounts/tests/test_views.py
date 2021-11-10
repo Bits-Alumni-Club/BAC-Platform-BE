@@ -264,3 +264,4 @@ class TestResetPasswordViews(TestViewSetup):
         # Login
         login_resp = self.client.post(reverse('login'), data={"email": email, "password": "newpassword"}, format='json')
         self.assertEqual(login_resp.status_code, status.HTTP_401_UNAUTHORIZED)
+
