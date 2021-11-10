@@ -97,7 +97,7 @@ class RequestPasswordResetAPI(APIView):
                 'email_subject': 'Reset your password'
             }
             Util.send_email(data)
-            return Response({"success": "Check your email for a reset password link working"}, status=status.HTTP_200_OK)
+            return Response({"success": "Check your email for a reset password link"}, status=status.HTTP_200_OK)
         else:
             return Response({"success": "Check your email for a reset password link working"}, status=status.HTTP_200_OK)
 

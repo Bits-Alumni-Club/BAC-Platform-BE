@@ -1,4 +1,4 @@
-"""BAC_Platform URL Configuration
+"""config URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -22,7 +22,7 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
    openapi.Info(
-      title="BAC_Platform",
+      title="config",
       default_version='v1',
       description="Bits Alumni Club",
       terms_of_service="https://www.bitsalumniclub.com/policies/terms/",
@@ -42,4 +42,5 @@ urlpatterns = [
 
     # app urls
     path('', include('accounts.urls')),
+    path('', include('events.urls')),
 ]
