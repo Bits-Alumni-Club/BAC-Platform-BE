@@ -33,8 +33,8 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # Custom app
-    'events',
     'accounts',
+    'events',
 
     # Third party app
     'drf_yasg',

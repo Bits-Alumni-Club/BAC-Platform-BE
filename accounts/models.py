@@ -15,19 +15,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
 
-class BitsSchool(models.Model):
-    name = models.CharField(_('bits school name'), max_length=200)
-    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name_plural = 'Bits Schools'
-        verbose_name = 'Bits School'
-
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     id = models.BigAutoField(primary_key=True, unique=True, editable=False)
     user_id = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
