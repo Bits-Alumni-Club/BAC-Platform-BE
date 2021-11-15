@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from decouple import config, Csv
+from decouple import config
 import dj_database_url
 import django_heroku
 
@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Custom app
+    'core',
     'accounts',
     'events',
 
@@ -95,7 +96,7 @@ DATABASES = {
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_USER_PASSWORD'),
         'HOST': config('DB_HOST'),                      # Empty for localhost through domain sockets.
-        'PORT': '5432',                      # Set to empty string for default.
+        'PORT': '5433',                      # Set to empty string for default.
 
     }
 }
