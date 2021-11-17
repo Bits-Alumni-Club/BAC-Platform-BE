@@ -43,4 +43,5 @@ urlpatterns = [
     # app urls
     path('', include('accounts.urls')),
     path('', include('events.urls')),
+    path('', include('core.urls')),
 ]

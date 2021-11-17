@@ -21,10 +21,10 @@ class Page(models.Model):
                                                  default=1)
     is_active = models.BooleanField(_('is active'), default=False)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return self.page_type
+        return str(self.page_type)
 
 
 class Home(models.Model):
@@ -33,7 +33,7 @@ class Home(models.Model):
     image = models.ImageField(_('image'), upload_to='media/core/')
     display_time = models.DateTimeField(_('display time'), auto_now=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
         return self.heading
@@ -49,7 +49,7 @@ class WhoWeAre(models.Model):
     heading = models.CharField(_('heading'), max_length=500)
     image = models.ImageField(_('image'), upload_to='media/core/')
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
         return self.heading
@@ -65,10 +65,10 @@ class Testimonial(models.Model):
     user = models.ForeignKey(to=CustomUser, related_name='testimonials', on_delete=models.CASCADE)
     testimony = models.CharField(_('testimony'), max_length=500)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return self.user
+        return str(self.user)
 
     class Meta:
         ordering = ['-created_at']
@@ -81,17 +81,17 @@ class Team(models.Model):
     team = models.ManyToManyField(to=CustomUser, related_name='teams')
     heading = models.CharField(_('heading'), max_length=500)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return self.team
+        return str(self.team)
 
 
 class ContactEmail(models.Model):
     email = models.EmailField(_('email'))
     is_active = models.BooleanField(_('is active'), default=False)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
         return self.email
@@ -101,7 +101,7 @@ class ContactNumber(models.Model):
     number = models.CharField(_('phone number'), max_length=14)
     is_active = models.BooleanField(_('is active'), default=False)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
         return self.number
@@ -112,7 +112,7 @@ class SocialPlatform(models.Model):
     link = models.URLField(_('link'))
     is_active = models.BooleanField(_('is active'), default=False)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
         return self.name
@@ -125,10 +125,10 @@ class Contact(models.Model):
     email = models.ManyToManyField(to=ContactEmail, related_name='contact_emails')
     platform = models.ManyToManyField(to=SocialPlatform,  related_name='social_links')
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return self.page
+        return str(self.page)
 
 
 class FAQ(models.Model):
@@ -136,9 +136,9 @@ class FAQ(models.Model):
     question = models.CharField(_('question'), max_length=200)
     answer = models.TextField(_('answer'))
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    update_at = models.DateTimeField(_('updated at'), auto_now=True)
+    updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return self.page
+        return str(self.page)
 
 
