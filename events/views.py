@@ -5,17 +5,24 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from events.utils import EventSearchFilter
+from events.renderers import (EventsRenderers, EventDetailRenderers, GalleriesRenderers, GalleryDetailRenderers,
+                              TagsRenderers, TagDetailRenderers)
+
 
 # from rest_framework import filters
 # Create your views here.
 
 
 class TagListAPI(generics.ListAPIView):
+    renderer_classes = (TagsRenderers,)
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class TagDetailsAPI(generics.RetrieveAPIView):
+    renderer_classes = (TagDetailRenderers,)
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     lookup_field = 'id'
@@ -23,6 +30,8 @@ class TagDetailsAPI(generics.RetrieveAPIView):
 
 class EventListAPI(generics.ListAPIView):
     # permission_classes = (IsAuthenticated,)
+    renderer_classes = (EventsRenderers,)
+
     filter_backends = (EventSearchFilter,)
     queryset = Event.objects.filter(is_gallery=False)
     serializer_class = EventSerializer
@@ -31,6 +40,8 @@ class EventListAPI(generics.ListAPIView):
 
 
 class EventDetailsAPI(generics.RetrieveAPIView):
+    renderer_classes = (EventDetailRenderers,)
+
     # permission_classes = (IsAuthenticated,)
     serializer_class = EventSerializer
     queryset = Event.objects.all()
@@ -38,11 +49,15 @@ class EventDetailsAPI(generics.RetrieveAPIView):
 
 
 class GalleryListAPI(generics.ListAPIView):
+    renderer_classes = (GalleriesRenderers,)
+
     serializer_class = GallerySerializer
     queryset = Event.objects.filter(is_gallery=True)
 
 
 class GalleryDetailsAPI(generics.RetrieveAPIView):
+    renderer_classes = (GalleryDetailRenderers,)
+
     serializer_class = GallerySerializer
     queryset = Event.objects.filter(is_gallery=True)
     lookup_field = 'event_id'
