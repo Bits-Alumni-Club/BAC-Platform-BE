@@ -62,7 +62,7 @@ class SignupAPI(APIView):
         # pdb.set_trace()
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"success": "Your application has be submitted successfully but account will be created once"
+        return Response({"message": "Your application has be submitted successfully but account will be created once"
                                     " information submitted has be verified. Please note that verification can take "
                                     "3-5 days."},
                         status=status.HTTP_201_CREATED)
@@ -110,10 +110,11 @@ class RequestPasswordResetAPI(APIView):
                 'email_subject': 'Reset your password'
             }
             Util.send_email(data)
-            return Response({"success": "Check your email for a reset password link"}, status=status.HTTP_200_OK)
+            return Response({"message": "Instructions on how to reset your password has been sent to " + email
+                             }, status=status.HTTP_200_OK)
         else:
-            return Response({"success": "Check your email for a reset password link working"},
-                            status=status.HTTP_200_OK)
+            return Response({"message": "Instructions on how to reset your password has been sent to " + email
+                             }, status=status.HTTP_200_OK)
 
 
 class PasswordResetTokenCheck(APIView):
@@ -133,7 +134,6 @@ class PasswordResetTokenCheck(APIView):
 
 
 class SetNewPasswordAPI(APIView):
-
     renderer_classes = (UserRegistrationRenderers,)
     new_password = openapi.Schema(type=openapi.TYPE_STRING)
     confirm_password = openapi.Schema(type=openapi.TYPE_STRING)
@@ -145,4 +145,4 @@ class SetNewPasswordAPI(APIView):
     def patch(self, request):
         serializer = SetNewPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response({"success": True, "message": "Password reset successful"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Password reset successful"}, status=status.HTTP_201_CREATED)
