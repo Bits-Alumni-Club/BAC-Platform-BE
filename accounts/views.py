@@ -3,7 +3,7 @@ from rest_framework import generics, permissions, authentication, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import UserSerializer, SignupSerializer, LoginSerializer, \
-    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer
+    RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, BitsSchoolSerializer
 from .models import CustomUser, Profile, BitsSchool
 from drf_yasg.utils import swagger_auto_schema
 from django.contrib.sites.shortcuts import get_current_site
@@ -14,9 +14,17 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from .utils import Util
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from .renderers import UsersRenderers, UserRegistrationRenderers, UserDetailRenderers
+from .renderers import UsersRenderers, UserRegistrationRenderers, UserDetailRenderers, BitsSchoolRenderers
+
 
 # # Create your views here.
+
+
+class BitsSchoolAPI(generics.ListAPIView):
+    renderer_classes = (BitsSchoolRenderers,)
+
+    queryset = BitsSchool.objects.all()
+    serializer_class = BitsSchoolSerializer
 
 
 class UserListAPI(generics.ListAPIView):
@@ -50,10 +58,13 @@ class SignupAPI(APIView):
                                                      properties=properties))
     def post(self, request):
         serializer = SignupSerializer(data=request.data)
+        # import pdb
+        # pdb.set_trace()
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response({"success": "your account was successfully created. "
-                                    "Account verification might take up to a week"},
+        return Response({"success": "Your application has be submitted successfully but account will be created once"
+                                    " information submitted has be verified. Please note that verification can take "
+                                    "3-5 days."},
                         status=status.HTTP_201_CREATED)
 
 
@@ -74,11 +85,13 @@ class LoginAPI(APIView):
 
 
 class RequestPasswordResetAPI(APIView):
+    renderer_classes = (UserRegistrationRenderers,)
+
     @swagger_auto_schema(request_body=openapi.Schema(type=openapi.TYPE_OBJECT,
                                                      required=['email'],
                                                      properties={'email': openapi.Schema(type=openapi.TYPE_STRING,
                                                                                          format=openapi.FORMAT_EMAIL)
-                                                                }))
+                                                                 }))
     def post(self, request):
         serializer = RequestPasswordResetEmailSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -99,10 +112,12 @@ class RequestPasswordResetAPI(APIView):
             Util.send_email(data)
             return Response({"success": "Check your email for a reset password link"}, status=status.HTTP_200_OK)
         else:
-            return Response({"success": "Check your email for a reset password link working"}, status=status.HTTP_200_OK)
+            return Response({"success": "Check your email for a reset password link working"},
+                            status=status.HTTP_200_OK)
 
 
 class PasswordResetTokenCheck(APIView):
+    renderer_classes = (UserRegistrationRenderers,)
 
     def get(self, request, uidb64, token):
         try:
@@ -118,6 +133,7 @@ class PasswordResetTokenCheck(APIView):
 
 
 class SetNewPasswordAPI(APIView):
+
     renderer_classes = (UserRegistrationRenderers,)
     new_password = openapi.Schema(type=openapi.TYPE_STRING)
     confirm_password = openapi.Schema(type=openapi.TYPE_STRING)

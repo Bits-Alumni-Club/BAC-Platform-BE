@@ -21,6 +21,7 @@ urlpatterns = [
     path('password-reset/', views.SetNewPasswordAPI.as_view(), name='password-reset'),
     path('password-reset-token-check/<uidb64>/<token>/', views.PasswordResetTokenCheck.as_view(),
          name='password-reset-token-check'),
+    path('bits-schools/', views.BitsSchoolAPI.as_view(), name='bits-schools'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
