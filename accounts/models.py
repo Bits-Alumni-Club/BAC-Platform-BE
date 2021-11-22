@@ -43,7 +43,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                                  default=1)
 
     def __str__(self):
-        return self.first_name+'-'+self.last_name
+        return self.first_name+' , '+self.last_name
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -108,6 +108,9 @@ class Profile(models.Model):
     linkedin_profile = models.URLField(_('linkedIn profile'))
     skill_sets = models.CharField(_('skill sets'), max_length=255, null=True, blank=True)
     extra_field = models.CharField(_('test'), max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return self.user.first_name+ ' , ' + self.user.last_name
 
     class Meta:
         verbose_name_plural = 'Profile'

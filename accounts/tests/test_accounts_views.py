@@ -1,3 +1,7 @@
+import django
+django.setup()
+import pytest
+from config.settings import dev
 import json
 from django.utils import timezone
 from django.core import mail
@@ -73,6 +77,7 @@ class TestSignUpViews(TestViewSetup):
 
 class TestLogInViews(TestViewSetup):
     def test_login_with_invalid_data(self):
+
         bits_school = self.create_bits_school()
         faker = Faker()
         email = faker.email()
@@ -119,6 +124,7 @@ class TestForgotPasswordViews(TestViewSetup):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(mail.outbox), 0)
 
+    @django.test.utils.override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_forgot_password_with_existing_email(self):
         faker = Faker()
         bits_school = BitsSchool.objects.create(name="NG1")
@@ -133,11 +139,13 @@ class TestForgotPasswordViews(TestViewSetup):
         user.is_active = True
         user.save()
         resp = self.client.post(reverse('password-reset-email'), data={"email": email}, format='json')
+
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(mail.outbox), 1)
 
 
 class TestResetPasswordViews(TestViewSetup):
+    @django.test.utils.override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_password_reset_invalid_link(self):
         faker = Faker()
         bits_school = BitsSchool.objects.create(name="NG1")
@@ -151,6 +159,7 @@ class TestResetPasswordViews(TestViewSetup):
         user.is_verified = True
         user.is_active = True
         user.save()
+
         resp = self.client.post(reverse('password-reset-email'), data={"email": email}, format='json')
 
         # Email format body
@@ -168,6 +177,7 @@ class TestResetPasswordViews(TestViewSetup):
                                 format='json')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
+    @django.test.utils.override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_password_reset_valid_link(self):
         faker = Faker()
         bits_school = BitsSchool.objects.create(name="NG1")
@@ -201,6 +211,7 @@ class TestResetPasswordViews(TestViewSetup):
                                 format='json')
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
+    @django.test.utils.override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_login_after_password_reset_success(self):
         faker = Faker()
         bits_school = BitsSchool.objects.create(name="NG1")
@@ -233,6 +244,7 @@ class TestResetPasswordViews(TestViewSetup):
         login_resp = self.client.post(reverse('login'), data={"email": email, "password": password}, format='json')
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
+    @django.test.utils.override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_login_after_password_reset_fail(self):
         faker = Faker()
         bits_school = BitsSchool.objects.create(name="NG1")
@@ -261,6 +273,7 @@ class TestResetPasswordViews(TestViewSetup):
                                                                   "uidb64": "QU",
                                                                   "token": email_data['token']},
                                  format='json')
+
         # Login
         login_resp = self.client.post(reverse('login'), data={"email": email, "password": "newpassword"}, format='json')
         self.assertEqual(login_resp.status_code, status.HTTP_401_UNAUTHORIZED)

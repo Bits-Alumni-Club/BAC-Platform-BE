@@ -1,9 +1,11 @@
+import django
+django.setup()
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 from core.models import (Page, Home, WhoWeAre, Team, Testimonial, ContactEmail, ContactNumber,
-                         Contact, SocialPlatform, FAQ,)
+                    Contact, SocialPlatform, FAQ,)
 from accounts.models import CustomUser, BitsSchool
+from rest_framework.test import APITestCase
 from faker import Faker
 
 
