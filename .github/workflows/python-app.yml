@@ -34,7 +34,7 @@ jobs:
     - name: Test with pytest
       run: |
         export PYTHONPATH=BAC_Platform
-        pytest
+        DJANGO_SETTINGS_MODULE=config.settings.dev pytest
     - name: Deploy to Heroku
       env:
         HEROKU_API_TOKEN: ${{ secrets.HEROKU_API_TOKEN }}

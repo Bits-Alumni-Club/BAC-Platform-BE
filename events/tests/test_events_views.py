@@ -1,10 +1,12 @@
+import django
+django.setup()
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from django.core import serializers
-# from .test_setup import TestSetup
 from django.utils import timezone
-from events.models import Event, EventGallery, Tag
 from accounts.models import CustomUser, BitsSchool
+from events.models import Event, EventGallery, Tag
+
 from faker import Faker
 
 

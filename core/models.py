@@ -24,7 +24,7 @@ class Page(models.Model):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return str(self.page_type)
+        return self.name
 
 
 class Home(models.Model):
@@ -36,7 +36,7 @@ class Home(models.Model):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return self.heading
+        return self.page.name
 
     class Meta:
         ordering = ['-created_at']
@@ -52,7 +52,7 @@ class WhoWeAre(models.Model):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return self.heading
+        return self.page.name
 
     class Meta:
         ordering = ['-created_at']
@@ -68,7 +68,7 @@ class Testimonial(models.Model):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return str(self.user)
+        return self.page.name + '' + self.user.email
 
     class Meta:
         ordering = ['-created_at']
@@ -84,7 +84,7 @@ class Team(models.Model):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return str(self.team)
+        return self.page.name
 
 
 class ContactEmail(models.Model):
@@ -128,7 +128,7 @@ class Contact(models.Model):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return str(self.page)
+        return self.page.name
 
 
 class FAQ(models.Model):
@@ -139,6 +139,6 @@ class FAQ(models.Model):
     updated_at = models.DateTimeField(_('updated at'), auto_now=True)
 
     def __str__(self):
-        return str(self.page)
+        return self.page.name
 
 

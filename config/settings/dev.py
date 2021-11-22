@@ -10,6 +10,6 @@ ALLOWED_HOSTS = ['*']
 
 #update here
 
-ALLOWED_HOSTS = ['0.0.0.0', 'bitsalumniclub-api.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', 'bitsalumniclub-api.herokuapp.com', '127.0.0.1', 'testserver', 'localhost']
 
 # adding few changes here
