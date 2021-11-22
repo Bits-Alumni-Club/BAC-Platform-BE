@@ -33,7 +33,13 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+      env:
         export PYTHONPATH=BAC_Platform
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_USER_PASSWORD: ${{ secrets.DB_USER_PASSWORD }}
+        EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+        EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
         DJANGO_SETTINGS_MODULE=config.settings.dev pytest
     - name: Deploy to Heroku
       env:
